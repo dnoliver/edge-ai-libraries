@@ -37,6 +37,23 @@ class Benchmark:
 
         self.logger = logging.getLogger("Benchmark")
 
+    def _run_pipeline_and_extract_metrics(
+        self,
+        pipeline_cls,
+        constants: Dict[str, str],
+        parameters: Dict[str, str],
+        channels: Tuple[int, int],
+        elements: List[tuple[str, str, str]],
+    ) -> List[Dict[str, float]]:
+        """Run the pipeline and extract metrics."""
+        return run_pipeline_and_extract_metrics(
+            pipeline_cls,
+            constants=constants,
+            parameters=parameters,
+            channels=channels,
+            elements=elements,
+        )
+
     def run(self) -> Tuple[int, int, int, float]:
         """Run the benchmark and return the best configuration."""
         n_streams = 1
@@ -48,7 +65,7 @@ class Benchmark:
             ai_streams = math.ceil(n_streams * (self.rate / 100))
             non_ai_streams = n_streams - ai_streams
 
-            results = run_pipeline_and_extract_metrics(
+            results = self._run_pipeline_and_extract_metrics(
                 self.pipeline_cls,
                 constants=self.constants,
                 parameters=self.parameters,
